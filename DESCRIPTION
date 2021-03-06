@@ -19,3 +19,5 @@ Imports:
     assertthat,
     corpcor,
     memoise
+URL: https://github.com/jtannen/svdcov
+BugReports: https://github.com/jtannen/svdcov/issues
