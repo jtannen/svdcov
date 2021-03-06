@@ -35,7 +35,7 @@ data <- MASS::mvrnorm(
 
 data <- t(data)
 
-res <- get_svd(data, n_svd=2, col_means=rep(0, 4))
+res <- get_svd(data, n_svd=2, col_means=rep(0, 100))
 
 res@row_cov
 get_fitted(res)
@@ -43,7 +43,7 @@ get_fitted(res)
 sample_from_posterior(
   res,
   obs=c(1.42, 7.34),
-  obs_id=as.character(c(1, 6)),
+  obs_id=c(1, 6),
   col_mean=0,
   col_mean_sd=1
 )
