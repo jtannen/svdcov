@@ -12,6 +12,9 @@ get_svd <- function(
 ){
   method=match.arg(method)
 
+  if(is.null(row.names(mat))) row.names(mat) <- 1:nrow(mat)
+  if(is.null(colnames(mat))) colnames(mat) <- 1:ncol(mat)
+
   if(is.null(row_groups)){
     row_groups <- 1:nrow(mat)
   } else {

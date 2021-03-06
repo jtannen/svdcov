@@ -1,12 +1,12 @@
 Package: svdcov
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Construct covariance matrices using SVD.
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Author: Jonathan Tannen
+Maintainer: Jonathan Tannen (jonathan.tannen@gmail.com)
+Description: Uses Singular Value Decomposition to construct a covariance matrix of 
+    non-rectangular data. Also provides helpers to generate samples.
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Suggests: 
