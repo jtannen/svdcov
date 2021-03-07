@@ -158,10 +158,11 @@ get_svd_cov <- function(
   row_cov <- svd$u %*% diag(svd_d) %*% cov(svd$v) %*% diag(svd_d) %*% t(svd$u)
   diag(row_cov) <- diag(row_cov) + resid_var
 
-  if(!all(diff(row_groups)==1)){
+  if(any(duplicated(row_groups))){
     vprint("Calculating group variance")
+    row_group_df <- data.frame(row=row.names(mat_demeaned), group=row_groups)
     group_resid <- resid %>%
-      mutate(group=row_groups) %>%
+      left_join(row_group_df, by="row") %>%
       group_by(group, column) %>%
       summarise(mean_resid = mean(residual))
 
