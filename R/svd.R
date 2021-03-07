@@ -21,23 +21,22 @@ get_svd <- function(
     assertthat::assert_that(length(row_groups) == nrow(mat))
   }
 
-  row_means <- rowMeans(mat)
-  mat_demeaned <- sweep(mat, row_means, MARGIN=1)
-
   if(is.null(col_means)){
-    col_means <- colMeans(mat_demeaned)
+    col_means <- colMeans(mat)
   } else {
     assertthat::assert_that(length(col_means) == ncol(mat))
   }
+  mat <- sweep(mat, col_means, MARGIN=2)
 
-  mat_demeaned <- sweep(mat_demeaned, col_means, MARGIN=2)
+  row_means <- rowMeans(mat)
+  mat <- sweep(mat, row_means, MARGIN=1)
 
-  mat_demeaned <- winsorize(mat_demeaned, prob=winsorize)
+  mat <- winsorize(mat, prob=winsorize)
 
   if(method == "shrinkage"){
-    svd_params <- get_shrinkage_cov(mat_demeaned, row_means, col_means, n_svd, verbose=verbose)
+    svd_params <- get_shrinkage_cov(mat, row_means, col_means, n_svd, verbose=verbose)
   } else if (method == "svd"){
-    svd_params <- get_svd_cov(mat_demeaned, row_means, col_means, n_svd, row_groups)
+    svd_params <- get_svd_cov(mat, row_means, col_means, n_svd, row_groups)
   } else {
     stop("method must be ('shrinkage', 'svd')")
   }

@@ -104,5 +104,22 @@ ggplot(
   
 res@col_scores %>% arrange(desc(score.1)) %>% head()
 
+## Suppose we have a weak prior that a candidate will receive 25% of the vote,
+## and then see they received 50% of the vote in "27-14".
+## How will the do in "01-01"?
+
+sample <- sample_from_posterior(
+  res,
+  obs=c(log(0.5), log(0.5)),
+  obs_id=c("01-02", "01-03"),
+  col_mean=log(0.25),
+  col_mean_sd=0.1
+)
+
+# Note: the model doesn't know these are percents, so some are > 1.
+sample %>% 
+  filter(row=="01-01") %>%
+  with(hist(exp(value)))
+
 ```
 

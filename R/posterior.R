@@ -86,7 +86,7 @@ sample_from_posterior <- function(
     + B %*% A_inv %*% (a - prior_means[a_rows,]) # N_C x n_sim
   )
 
-  c_sigma <- C - B %*% A_inv %*% t(B) # N_C x n_sim
+  c_sigma <- C - B %*% A_inv %*% t(B) # N_C x N_C
   if(length(a_rows) <= 1) rownames(c_sigma) <- names(B) ## otherwise it gets inherited
 
   vprint("Calculating Cholesky")
