@@ -34,8 +34,8 @@ sample_from_posterior <- function(
   svd,
   obs,
   obs_id,
-  # col_mean,
-  # col_mean_sd=0, ## posterior sd of column_mean
+  col_mean_prior=NULL,
+  col_mean_prior_var=NULL,
   filter_to_ids=NULL,
   n_sim=400,
   verbose=FALSE
@@ -73,9 +73,12 @@ sample_from_posterior <- function(
   vprint(sprintf("nrow(A) = %s", nrow(A)))
 
   a_dm <- a - row_means[a_rows]
-  mu_0 <- mean(svd@col_scores$mean)
-  var_0 <- var(svd@col_scores$mean)
-  col_pars <- posterior_mean(a_dm, A, mu_0, var_0)
+  if(is.null(col_mean_prior)){
+    col_mean_prior <- mean(svd@col_scores$mean)
+    col_mean_prior_var <- var(svd@col_scores$mean)
+  }
+
+  col_pars <- posterior_mean(a_dm, A, col_mean_prior, col_mean_prior_var)
 
   sim_means <- rnorm(n_sim, mean=col_pars$mean, sd=sqrt(col_pars$var)) # n_sim
   prior_means <- outer(row_means, sim_means, FUN="+") # (N_A + N_C) x n_sim

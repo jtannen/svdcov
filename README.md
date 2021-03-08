@@ -86,29 +86,32 @@ mat <- mat %>% tibble::column_to_rownames("warddiv")
 mat <- as.matrix(mat)
 
 row_ward <- substr(row.names(mat), 1, 2)
-res <- get_svd(
+svd_par <- get_svd(
   mat, 
   n_svd=3,
-  row_groups=row_ward  ## cluster extra variance by ward
+  row_groups=row_ward,  ## cluster extra variance by ward
+  is_logged=TRUE
 )
 
 ggplot(
-  divs %>% left_join(res@row_scores, by=c("warddiv"="row"))
+  divs %>% left_join(svd_par@row_scores, by=c("warddiv"="row"))
 ) + 
   geom_sf(aes(fill=score.1), color=NA) +
   scale_fill_gradient2() +
   theme_minimal()
   
-res@col_scores %>% arrange(desc(score.1)) %>% head()
+svd_par@col_scores %>% arrange(desc(score.1)) %>% head()
 
 ## Suppose we have a weak prior that a candidate will receive 25% of the vote,
 ## and then see they received 50% of the vote in "27-14".
 ## How will the do in "01-01"?
 
 sample <- sample_from_posterior(
-  res,
+  svd_par,
   obs=c(log(0.5), log(0.5)),
-  obs_id=c("01-02", "01-03")
+  obs_id=c("01-02", "01-03"),
+  col_mean_prior=log(0.25),
+  col_mean_prior_var=1
 )
 
 # Note: the model doesn't know these are percents, so some are > 1.
