@@ -34,8 +34,8 @@ sample_from_posterior <- function(
   svd,
   obs,
   obs_id,
-  col_mean,
-  col_mean_sd=0, ## posterior sd of column_mean
+  # col_mean,
+  # col_mean_sd=0, ## posterior sd of column_mean
   filter_to_ids=NULL,
   n_sim=400,
   verbose=FALSE
@@ -72,8 +72,13 @@ sample_from_posterior <- function(
   vprint("Calculating A inverse")
   vprint(sprintf("nrow(A) = %s", nrow(A)))
 
-  sim_means <- rnorm(n_sim, mean=col_mean, sd=col_mean_sd) # n_sim
-  prior_means <- outer(row_means, sim_means, FUN="+") # N_D x n_sim
+  a_dm <- a - row_means[a_rows]
+  mu_0 <- mean(svd@col_scores$mean)
+  var_0 <- var(svd@col_scores$mean)
+  col_pars <- posterior_mean(a_dm, A, mu_0, var_0)
+
+  sim_means <- rnorm(n_sim, mean=col_pars$mean, sd=sqrt(col_pars$var)) # n_sim
+  prior_means <- outer(row_means, sim_means, FUN="+") # (N_A + N_C) x n_sim
 
   if(length(a_rows) > 0){
     A_inv <- solve(A)
@@ -118,6 +123,25 @@ sample_from_posterior <- function(
 
   return(sim)
 }
+
+posterior_mean <- function(x, Sigma, mu_0, var_0){
+  # suppose
+  # x ~ norm(mu, Sigma)
+  # mu ~ norm(mu_0, var_0)
+  # Then LL(x | mu) = - 0.5 (x - 1mu)' Sigma^-1 (x - 1mu) - 0.5 (mu - mu_0)^2/var_0
+  # So
+  # var_post = (Sigma^-1 + 1/var_0)^-1
+  # mu | x ~ norm(var_post * (Sigma^-1 x + mu_0 / var_0), var_post)
+
+  var_post <- (sum(solve(Sigma)) + 1/var_0)^-1
+  mean_post <- var_post * (sum(solve(Sigma, x)) + mu_0 / var_0)
+
+  list(
+    mean=mean_post,
+    var=var_post
+  )
+}
+
 
 posterior_sample <- function(...) stop("Deprecated. Change to sample_from_posterior().")
 

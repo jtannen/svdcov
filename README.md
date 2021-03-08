@@ -35,7 +35,7 @@ data <- MASS::mvrnorm(
 
 data <- t(data)
 
-res <- get_svd(data, n_svd=2, col_means=rep(0, 100))
+res <- get_svd(data, n_svd=2)
 
 res@row_cov
 get_fitted(res)
@@ -43,11 +43,8 @@ get_fitted(res)
 sample_from_posterior(
   res,
   obs=c(1.42, 7.34),
-  obs_id=c(1, 6),
-  col_mean=0,
-  col_mean_sd=1
+  obs_id=c(1, 6)
 )
-
 
 ## Example with Philadelphia elections data
 library(dplyr)
@@ -92,7 +89,7 @@ row_ward <- substr(row.names(mat), 1, 2)
 res <- get_svd(
   mat, 
   n_svd=3,
-  row_groups=row_ward  ## cluster uncertainty by ward
+  row_groups=row_ward  ## cluster extra variance by ward
 )
 
 ggplot(
@@ -111,9 +108,7 @@ res@col_scores %>% arrange(desc(score.1)) %>% head()
 sample <- sample_from_posterior(
   res,
   obs=c(log(0.5), log(0.5)),
-  obs_id=c("01-02", "01-03"),
-  col_mean=log(0.25),
-  col_mean_sd=0.1
+  obs_id=c("01-02", "01-03")
 )
 
 # Note: the model doesn't know these are percents, so some are > 1.
